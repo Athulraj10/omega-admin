@@ -9,7 +9,7 @@ const ProductSchema = new mongoose.Schema({
     images: [{ type: String }],
     stock: { type: Number, default: 0 },
     sku: { type: String, unique: true },
-    status: { type: String, enum: ['1', '0'], default: 'active' },
+    status: { type: String, enum: ['1', '0'], default: '1' },
     ratingsAverage: { type: Number, default: 0 },
     ratingsCount: { type: Number, default: 0 },
     seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller' },
