@@ -41,8 +41,8 @@ const createApp = () => {
   const { connect } = require("./src/config/dbConnection");
 
   // Socket.io setup
-  // const { createSocketServer } = require("./src/socket/index");
-  // const io = createSocketServer(server);
+  const { createSocketServer } = require("./src/socket/index");
+  const io = createSocketServer(server);
 
   // Routes
   const indexRoute = require("./src/routes");
