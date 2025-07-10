@@ -12,7 +12,7 @@ const ProductSchema = new mongoose.Schema({
     status: { type: String, enum: ['1', '0'], default: '1' },
     ratingsAverage: { type: Number, default: 0 },
     ratingsCount: { type: Number, default: 0 },
-    seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller' },
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 }, {

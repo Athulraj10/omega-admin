@@ -1,33 +1,49 @@
-import { getDefaultState } from "@/utils//helperWindows";
 import {
   LOGIN,
-  LOGIN_FAILURE,
   LOGIN_SUCCESS,
-  AuthActionType,
+  LOGIN_FAILURE,
+  LoginAction,
+  LoginSuccessAction,
+  LoginFailureAction,
 } from "../../action/types/loginTypes";
 
-interface AuthState {
+interface LoginState {
   loading: boolean;
-  userData: any;
+  data: any;
+  error: string | null;
 }
-const defaultUserData = getDefaultState("userData");
 
-const INIT_STATE: AuthState = {
+const initialState: LoginState = {
   loading: false,
-  userData: defaultUserData,
+  data: null,
+  error: null,
 };
 
 const loginReducer = (
-  state = INIT_STATE,
-  action: AuthActionType,
-): AuthState => {
+  state = initialState,
+  action: LoginAction | LoginSuccessAction | LoginFailureAction
+): LoginState => {
   switch (action.type) {
     case LOGIN:
-      return { ...state, loading: true };
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
     case LOGIN_SUCCESS:
-      return { ...state, userData: action?.payload, loading: false };
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        error: null,
+      };
     case LOGIN_FAILURE:
-      return { ...state, loading: false };
+      return {
+        ...state,
+        loading: false,
+        data: null,
+        error: action.payload || "Login failed",
+      };
     default:
       return state;
   }

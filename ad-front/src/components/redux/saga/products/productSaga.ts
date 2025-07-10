@@ -6,14 +6,32 @@ import { ProductAction } from "../../action/types/productTypes";
 
 function* fetchProductsRequest() {
   try {
+    console.log('🔄 Saga: fetchProductsRequest started');
+    console.log('🔄 Fetching products...');
+    console.log('🔑 Token check:', typeof window !== 'undefined' ? !!localStorage.getItem('token') : 'SSR');
+    
     const { data } = yield call(API.get, "admin/products");
-    if (data?.success) {
+    console.log('📡 API Response:', data);
+    
+    if (data?.meta?.code === 200 || data?.success) {
+      console.log('✅ Products fetched successfully:', data.data?.length || 0, 'products');
+      console.log('📦 First product sample:', data.data?.[0] ? {
+        _id: data.data[0]._id,
+        name: data.data[0].name,
+        category: data.data[0].category
+      } : 'No products');
       yield put({ type: types.FETCH_PRODUCTS_SUCCESS, payload: data.data });
     } else {
+      console.log('❌ API returned error:', data?.meta?.message || data?.message);
       yield put({ type: types.FETCH_PRODUCTS_FAILURE });
-      notifyDanger(data?.message);
+      notifyDanger(data?.meta?.message || data?.message);
     }
-  } catch (error) {
+  } catch (error: any) {
+    console.error('❌ Error fetching products:', error);
+    if (error.response) {
+      console.error('📄 Error response status:', error.response.status);
+      console.error('📄 Error response data:', error.response.data);
+    }
     yield put({ type: types.FETCH_PRODUCTS_FAILURE });
     notifyDanger("Failed to fetch products");
   }
@@ -23,13 +41,21 @@ function* addProductRequest(action: ProductAction) {
   try {
     if (!action.payload) return;
     const formData = new FormData();
+    
+    // Add product data (excluding images)
     Object.entries(action.payload.data || {}).forEach(([key, value]) => {
-      if (key === "images" && Array.isArray(value)) {
-        value.forEach((file) => formData.append("images", file));
-      } else {
-        formData.append(key, value !== undefined && value !== null ? String(value) : "");
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
       }
     });
+    
+    // Add files separately
+    if (action.payload.files && action.payload.files.length > 0) {
+      action.payload.files.forEach((file: File) => {
+        formData.append("images", file);
+      });
+    }
+    
     const { data } = yield call(() => API.post("admin/products", formData, { headers: { "Content-Type": "multipart/form-data" } }));
     if (data?.success) {
       yield put({ type: types.ADD_PRODUCT_SUCCESS, payload: data.data });
@@ -37,10 +63,12 @@ function* addProductRequest(action: ProductAction) {
       notifySuccess(data?.message);
     } else {
       yield put({ type: types.ADD_PRODUCT_FAILURE });
+      if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
       notifyDanger(data?.message);
     }
   } catch (error) {
     yield put({ type: types.ADD_PRODUCT_FAILURE });
+    if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
     notifyDanger("Failed to add product");
   }
 }
@@ -49,13 +77,21 @@ function* editProductRequest(action: ProductAction) {
   try {
     if (!action.payload) return;
     const formData = new FormData();
+    
+    // Add product data (excluding images)
     Object.entries(action.payload.data || {}).forEach(([key, value]) => {
-      if (key === "images" && Array.isArray(value)) {
-        value.forEach((file) => formData.append("images", file));
-      } else {
-        formData.append(key, value !== undefined && value !== null ? String(value) : "");
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
       }
     });
+    
+    // Add files separately
+    if (action.payload.files && action.payload.files.length > 0) {
+      action.payload.files.forEach((file: File) => {
+        formData.append("images", file);
+      });
+    }
+    
     const { data } = yield call(() => API.put(`admin/products/${action.payload?.id}`, formData, { headers: { "Content-Type": "multipart/form-data" } }));
     if (data?.success) {
       yield put({ type: types.EDIT_PRODUCT_SUCCESS, payload: data.data });
@@ -63,10 +99,12 @@ function* editProductRequest(action: ProductAction) {
       notifySuccess(data?.message);
     } else {
       yield put({ type: types.EDIT_PRODUCT_FAILURE });
+      if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
       notifyDanger(data?.message);
     }
   } catch (error) {
     yield put({ type: types.EDIT_PRODUCT_FAILURE });
+    if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
     notifyDanger("Failed to edit product");
   }
 }

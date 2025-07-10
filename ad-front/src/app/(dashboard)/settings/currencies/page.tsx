@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { PencilSquareIcon, TrashIcon } from "@/assets/icons";
 import InputGroup from "@/components/FormElements/InputGroup";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import API from "@/utils/api";
 
 interface Currency {
-  id: string;
+  _id: string;
   name: string;
   code: string;
   symbol: string;
@@ -13,17 +15,17 @@ interface Currency {
   isDefault: boolean;
   isActive: boolean;
   decimalPlaces: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function Currencies() {
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { currencies, loading, fetchCurrencies } = useCurrency();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCurrency, setEditingCurrency] = useState<Currency | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [formLoading, setFormLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -34,112 +36,39 @@ export default function Currencies() {
     isActive: true,
   });
 
-  // Mock data for demonstration
-  useEffect(() => {
-    const mockCurrencies: Currency[] = [
-      {
-        id: "1",
-        name: "US Dollar",
-        code: "USD",
-        symbol: "$",
-        exchangeRate: 1.0,
-        isDefault: true,
-        isActive: true,
-        decimalPlaces: 2,
-        createdAt: "2024-01-15",
-        updatedAt: "2024-01-20",
-      },
-      {
-        id: "2",
-        name: "Euro",
-        code: "EUR",
-        symbol: "€",
-        exchangeRate: 0.85,
-        isDefault: false,
-        isActive: true,
-        decimalPlaces: 2,
-        createdAt: "2024-01-16",
-        updatedAt: "2024-01-19",
-      },
-      {
-        id: "3",
-        name: "British Pound",
-        code: "GBP",
-        symbol: "£",
-        exchangeRate: 0.73,
-        isDefault: false,
-        isActive: true,
-        decimalPlaces: 2,
-        createdAt: "2024-01-17",
-        updatedAt: "2024-01-18",
-      },
-      {
-        id: "4",
-        name: "Japanese Yen",
-        code: "JPY",
-        symbol: "¥",
-        exchangeRate: 110.5,
-        isDefault: false,
-        isActive: false,
-        decimalPlaces: 0,
-        createdAt: "2024-01-18",
-        updatedAt: "2024-01-20",
-      },
-    ];
-
-    setTimeout(() => {
-      setCurrencies(mockCurrencies);
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormLoading(true);
     
-    if (editingCurrency) {
-      // Update existing currency
-      const updatedCurrency: Currency = {
-        ...editingCurrency,
-        name: formData.name,
-        code: formData.code,
-        symbol: formData.symbol,
-        exchangeRate: parseFloat(formData.exchangeRate),
-        decimalPlaces: parseInt(formData.decimalPlaces),
-        isActive: formData.isActive,
-        updatedAt: new Date().toISOString().split('T')[0],
-      };
-      
-      setCurrencies(currencies.map(curr => 
-        curr.id === editingCurrency.id ? updatedCurrency : curr
-      ));
-      setEditingCurrency(null);
-    } else {
-      // Add new currency
-      const newCurrency: Currency = {
-        id: Date.now().toString(),
-        name: formData.name,
-        code: formData.code,
-        symbol: formData.symbol,
-        exchangeRate: parseFloat(formData.exchangeRate),
-        isDefault: false,
-        isActive: formData.isActive,
-        decimalPlaces: parseInt(formData.decimalPlaces),
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
-      };
-      
-      setCurrencies([...currencies, newCurrency]);
+    try {
+      if (editingCurrency) {
+        // Update existing currency
+        const response = await API.put(`/admin/currencies/${editingCurrency._id}`, formData);
+        if (response.data?.meta?.code === 200 || response.data?.success) {
+          console.log('✅ Currency updated successfully');
+          await fetchCurrencies(); // Refresh currencies
+          setEditingCurrency(null);
+          resetForm();
+        } else {
+          throw new Error(response.data?.meta?.message || 'Failed to update currency');
+        }
+      } else {
+        // Add new currency
+        const response = await API.post('/admin/currencies', formData);
+        if (response.data?.meta?.code === 200 || response.data?.success) {
+          console.log('✅ Currency created successfully');
+          await fetchCurrencies(); // Refresh currencies
+          resetForm();
+        } else {
+          throw new Error(response.data?.meta?.message || 'Failed to create currency');
+        }
+      }
+    } catch (error: any) {
+      console.error('❌ Error saving currency:', error);
+      alert(error.message || 'An error occurred while saving the currency');
+    } finally {
+      setFormLoading(false);
     }
-    
-    setFormData({
-      name: "",
-      code: "",
-      symbol: "",
-      exchangeRate: "",
-      decimalPlaces: "2",
-      isActive: true,
-    });
-    setShowAddForm(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -162,24 +91,51 @@ export default function Currencies() {
     setShowAddForm(true);
   };
 
-  const handleDelete = (currencyId: string) => {
+  const handleDelete = async (currencyId: string) => {
     if (confirm("Are you sure you want to delete this currency?")) {
-      console.log("Delete currency:", currencyId);
-      setCurrencies(currencies.filter(curr => curr.id !== currencyId));
+      try {
+        const response = await API.delete(`/admin/currencies/${currencyId}`);
+        if (response.data?.meta?.code === 200 || response.data?.success) {
+          console.log('✅ Currency deleted successfully');
+          await fetchCurrencies(); // Refresh currencies
+        } else {
+          throw new Error(response.data?.meta?.message || 'Failed to delete currency');
+        }
+      } catch (error: any) {
+        console.error('❌ Error deleting currency:', error);
+        alert(error.message || 'An error occurred while deleting the currency');
+      }
     }
   };
 
-  const handleSetDefault = (currencyId: string) => {
-    setCurrencies(currencies.map(curr => ({
-      ...curr,
-      isDefault: curr.id === currencyId,
-    })));
+  const handleSetDefault = async (currencyId: string) => {
+    try {
+      const response = await API.patch(`/admin/currencies/${currencyId}/default`);
+      if (response.data?.meta?.code === 200 || response.data?.success) {
+        console.log('✅ Default currency updated successfully');
+        await fetchCurrencies(); // Refresh currencies
+      } else {
+        throw new Error(response.data?.meta?.message || 'Failed to set default currency');
+      }
+    } catch (error: any) {
+      console.error('❌ Error setting default currency:', error);
+      alert(error.message || 'An error occurred while setting the default currency');
+    }
   };
 
-  const handleStatusChange = (currencyId: string, isActive: boolean) => {
-    setCurrencies(currencies.map(curr => 
-      curr.id === currencyId ? { ...curr, isActive } : curr
-    ));
+  const handleStatusChange = async (currencyId: string, isActive: boolean) => {
+    try {
+      const response = await API.patch(`/admin/currencies/${currencyId}/status`, { isActive });
+      if (response.data?.meta?.code === 200 || response.data?.success) {
+        console.log('✅ Currency status updated successfully');
+        await fetchCurrencies(); // Refresh currencies
+      } else {
+        throw new Error(response.data?.meta?.message || 'Failed to update currency status');
+      }
+    } catch (error: any) {
+      console.error('❌ Error updating currency status:', error);
+      alert(error.message || 'An error occurred while updating the currency status');
+    }
   };
 
   const filteredCurrencies = currencies.filter(currency => {
@@ -310,19 +266,27 @@ export default function Currencies() {
                 Active Currency
               </label>
             </div>
-            <div className="flex justify-end space-x-4">
+            <div className="flex items-center gap-2">
+              <button
+                type="submit"
+                disabled={formLoading}
+                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-white transition-all hover:bg-opacity-90 disabled:opacity-50"
+              >
+                {formLoading ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                ) : (
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                )}
+                {editingCurrency ? "Update Currency" : "Add Currency"}
+              </button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="rounded-lg border border-stroke px-4 py-2 font-medium text-black transition-all hover:shadow-1 dark:border-strokedark dark:text-white dark:hover:shadow-1"
+                className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="rounded-lg bg-primary px-4 py-2 font-medium text-white transition-all hover:bg-opacity-90"
-              >
-                {editingCurrency ? "Update Currency" : "Add Currency"}
               </button>
             </div>
           </form>
@@ -372,7 +336,7 @@ export default function Currencies() {
       </div>
 
       {/* Currencies Table */}
-      <div className="rounded-lg bg-white shadow-sm dark:bg-gray-dark dark:border dark:border-stroke-dark">
+      <div className="rounded-lg bg-white shadow-sm dark:bg-gray-dark">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -403,7 +367,7 @@ export default function Currencies() {
             <tbody>
               {filteredCurrencies.map((currency) => (
                 <tr
-                  key={currency.id}
+                  key={currency._id}
                   className="border-b border-stroke dark:border-strokedark hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <td className="px-6 py-4">
@@ -433,7 +397,7 @@ export default function Currencies() {
                   <td className="px-6 py-4">
                     <select
                       value={currency.isActive ? "active" : "inactive"}
-                      onChange={(e) => handleStatusChange(currency.id, e.target.value === "active")}
+                      onChange={(e) => handleStatusChange(currency._id, e.target.value === "active")}
                       className={`rounded-full px-3 py-1 text-xs font-medium border-0 ${
                         currency.isActive
                           ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
@@ -451,7 +415,7 @@ export default function Currencies() {
                       </span>
                     ) : (
                       <button
-                        onClick={() => handleSetDefault(currency.id)}
+                        onClick={() => handleSetDefault(currency._id)}
                         className="rounded bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                       >
                         Set Default
@@ -468,7 +432,7 @@ export default function Currencies() {
                         <PencilSquareIcon />
                       </button>
                       <button
-                        onClick={() => handleDelete(currency.id)}
+                        onClick={() => handleDelete(currency._id)}
                         disabled={currency.isDefault}
                         className="rounded p-1 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
                         title={currency.isDefault ? "Cannot delete default currency" : "Delete"}

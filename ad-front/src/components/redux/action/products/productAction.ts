@@ -1,9 +1,12 @@
 import * as types from "../types/productTypes";
 import { ProductPayload, ProductAction } from "../types/productTypes";
 
-export const fetchProducts = (): ProductAction => ({
-  type: types.FETCH_PRODUCTS,
-});
+export const fetchProducts = (): ProductAction => {
+  console.log('🎯 Action: fetchProducts dispatched');
+  return {
+    type: types.FETCH_PRODUCTS,
+  };
+};
 
 export const addProduct = (payload: ProductPayload): ProductAction => ({
   type: types.ADD_PRODUCT,

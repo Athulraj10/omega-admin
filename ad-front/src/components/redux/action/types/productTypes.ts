@@ -21,7 +21,9 @@ export const UPDATE_PRODUCT_STATUS_FAILURE = "UPDATE_PRODUCT_STATUS_FAILURE";
 export interface ProductPayload {
   id?: string;
   data?: any;
+  files?: File[];
   callback?: (data: any) => void;
+  errorCallback?: () => void;
 }
 
 export interface ProductAction {

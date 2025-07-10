@@ -29,7 +29,7 @@ module.exports = {
           const system_ip = req.clientIp;
           {
             console.log("not google login");
-            let isPassword = true;
+            let isPassword = false; // FIXED: Initialize as false for security
             const filters = [];
 
             if (requestParams.email) {
@@ -39,9 +39,9 @@ module.exports = {
               filters.push({ mobile_no: requestParams.mobile_no });
             }
 
-            if (requestParams.device_code) {
-              filters.push({ device_code: requestParams.device_code.toLowerCase() });
-            }
+            // if (requestParams.device_code) {
+            //   filters.push({ device_code: requestParams.device_code.toLowerCase() });
+            // }
 
             let user;
 
@@ -61,13 +61,22 @@ console.log({user})
                 Response.errorResponseWithoutData(res, res.locals.__("emailNotVerified"), FAIL);
               } else {
                 if (user?.status === ACTIVE) {
-                  if (requestParams.password) {
+                  // FIXED: Always require password validation
+                  if (requestParams.password && user.password) {
                     const comparePassword = await bcrypt.compare(requestParams.password, user.password);
-                    if (comparePassword) {
-                      isPassword = true;
-                    } else {
-                      isPassword = false;
-                    }
+                    isPassword = comparePassword; // Set based on actual comparison result
+                    console.log('🔐 Password comparison result:', { 
+                      provided: !!requestParams.password, 
+                      stored: !!user.password, 
+                      match: comparePassword 
+                    });
+                  } else {
+                    // FIXED: If no password provided or user has no password, authentication fails
+                    isPassword = false;
+                    console.log('❌ Password validation failed:', { 
+                      provided: !!requestParams.password, 
+                      stored: !!user.password 
+                    });
                   }
                   if (isPassword) {
                     const payload = {

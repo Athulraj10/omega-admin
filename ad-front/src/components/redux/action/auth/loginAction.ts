@@ -18,6 +18,7 @@ export const loginSuccess = (payload: any): LoginSuccessAction => ({
   payload,
 });
 
-export const loginFailure = (): LoginFailureAction => ({
+export const loginFailure = (error?: string): LoginFailureAction => ({
   type: LOGIN_FAILURE,
+  payload: error,
 });

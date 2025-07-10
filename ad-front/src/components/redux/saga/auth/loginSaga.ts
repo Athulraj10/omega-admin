@@ -13,23 +13,30 @@ function* loginRequest(action: LoginAction) {
   try {
     const { data } = yield API.post("admin/login", action?.payload?.data);
     // const { data } = yield call(API.post, "admin/login", action.payload.data);
-    console.log(data);
+    console.log('🔐 Login response:', data);
+    
     if (data?.meta?.code === 200) {
-      yield put(loginSuccess(data?.data));
       const modifiedData = {
         ...data?.data,
         token: data?.meta?.token,
       };
-      yield call(action?.payload?.callback, modifiedData);
+      yield put(loginSuccess(modifiedData));
       notifySuccess(data?.meta?.message);
     } else {
-      console.log(data.meta.message);
-      notifyWarning(data?.meta?.message);
-      yield put(loginFailure());
+      console.log('❌ Login failed:', data.meta.message);
+      // Show the actual error message from the backend
+      notifyWarning(data?.meta?.message || "Login failed");
+      yield put(loginFailure(data?.meta?.message || "Login failed"));
     }
-  } catch (error) {
+  } catch (error: any) {
+    // console.error('💥 Login error:', error);
     yield put(loginFailure());
-    notifyDanger("Internal Server Error.");
+    
+    // Show appropriate error message
+    const errorMessage = error?.response?.data?.meta?.message || 
+                        error?.message || 
+                        "Internal Server Error.";
+    notifyDanger(errorMessage);
   }
 }
 

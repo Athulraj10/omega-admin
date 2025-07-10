@@ -28,7 +28,9 @@ const requiredENV = ['NODE_ENV', 'PORT', "AMZ_ACCESS_KEY", "MONGO_CONNECTION_STR
 
 validateEnv(requiredENV);
 
-export const config = {
+const config = {
     port: process.env.PORT || 3000,
     mongoUri: process.env.MONGO_CONNECTION_STRING,
 };
+
+module.exports = { config };

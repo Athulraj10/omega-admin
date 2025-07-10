@@ -60,5 +60,30 @@ module.exports = {
         };
         return res.status(code)
             .send(response);
+    },
+
+    // New methods for consistent API responses
+    success(res, data, message = 'Success', code = 200) {
+        return res.status(code).json({
+            success: true,
+            message,
+            data,
+            meta: {
+                code,
+                timestamp: new Date().toISOString()
+            }
+        });
+    },
+
+    error(res, message = 'Error occurred', code = 500) {
+        return res.status(code).json({
+            success: false,
+            message,
+            data: null,
+            meta: {
+                code,
+                timestamp: new Date().toISOString()
+            }
+        });
     }
 };

@@ -1,8 +1,8 @@
 {
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.842.0",
     "@hapi/joi": "^17.1.1",
     "@socket.io/redis-adapter": "^8.3.0",
-    "aws-sdk": "^2.1521.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "connect": "^3.7.0",
@@ -45,7 +45,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "prod": "node server.js",
-    "seeder": "cd src/seeders && node adminSeeder.js "
+    "seeder": "cd src/seeders && node adminSeeder.js",
+    "test-api": "node test-api.js"
   },
   "name": "omega",
   "description": "",
