@@ -400,3 +400,27 @@
 {"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-10 00:10:50"}
 {"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-10 10:20:11"}
 {"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-10 10:20:11"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-14 21:59:02"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-14 21:59:02"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-14 22:00:41"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-14 22:00:41"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-14 22:04:42"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-14 22:04:42"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-14 22:06:04"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-14 22:06:05"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:48:48"}
+{"level":"error","message":"Error connecting to database   connect ECONNREFUSED 0.0.0.0:27017","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":null,"maxSetVersion":null,"servers":{},"setName":null,"stale":false,"type":"Unknown"},"service":"backend","stack":"MongoServerSelectionError: connect ECONNREFUSED 0.0.0.0:27017\n    at Timeout._onTimeout (C:\\Users\\ATHUL\\Desktop\\omega\\omega-admin\\ad-backend\\node_modules\\mongodb\\lib\\sdam\\topology.js:278:38)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)","timestamp":"2025-07-15 09:49:18"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:49:43"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:49:43"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:51:39"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:51:39"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:52:07"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:52:07"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:56:09"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:56:09"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:56:17"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:56:17"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::mongodb://0.0.0.0:27017/local","service":"backend","timestamp":"2025-07-15 09:57:06"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:57:06"}
+{"level":"info","message":"process.env.MONGO_CONNECTION_STRING :::undefined","service":"backend","timestamp":"2025-07-15 09:59:15"}
+{"level":"info","message":"Connected to database","service":"backend","timestamp":"2025-07-15 09:59:15"}

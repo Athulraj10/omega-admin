@@ -27,15 +27,17 @@ const createApp = () => {
   // CORS setup
   app.use(
     cors({
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      origin: ["http://localhost:3001", "http://localhost:3000", "http://localhost:8001"],
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+      preflightContinue: false,
+      optionsSuccessStatus: 204
     })
   );
-  app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    next();
-  });
+  
+  // Handle preflight requests
+  app.options('*', cors());
 
   // Database connection (but don't connect immediately)
   const { connect } = require("./src/config/dbConnection");

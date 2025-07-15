@@ -18,14 +18,23 @@ const {
 const {
   addBanner,
   getBanners,
+  updateBanner,
   updateSliderStatus,
+  setDefaultBanner,
   deleteSlider,
 } = require("../../controllers/admin/homeController");
 
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, "../../uploads/products/");
+    // Determine upload path based on route
+    let uploadPath;
+    if (req.path.includes('/banners')) {
+      uploadPath = path.join(__dirname, "../../uploads/banners/");
+    } else {
+      uploadPath = path.join(__dirname, "../../uploads/products/");
+    }
+    
     console.log('📁 Upload destination:', uploadPath);
     
     // Ensure directory exists
@@ -60,17 +69,6 @@ const upload = multer({
   }
 });
 
-
-router.post("/login", login);
-router.post("/reset-password", adminTokenAuth, resetPassword);
-router.post("/logout", adminTokenAuth, logout);
-router.post("/update-profile", adminTokenAuth, updateProfile);
-
-router.post("/add-home-slider", adminTokenAuth, addBanner);
-router.post("/home-sliders", adminTokenAuth, getBanners);
-router.put("/home-slider", adminTokenAuth, updateSliderStatus);
-router.delete("/home-slider/:id", adminTokenAuth, deleteSlider);
-
 // Multer error handling middleware
 const handleMulterError = (error, req, res, next) => {
   if (error instanceof multer.MulterError) {
@@ -101,6 +99,25 @@ const handleMulterError = (error, req, res, next) => {
   }
   next(error);
 };
+
+router.post("/login", login);
+router.post("/reset-password", adminTokenAuth, resetPassword);
+router.post("/logout", adminTokenAuth, logout);
+router.post("/update-profile", adminTokenAuth, updateProfile);
+
+// Banner routes
+router.post("/banners", adminTokenAuth, upload.single("image"), handleMulterError, addBanner);
+router.get("/banners", adminTokenAuth, getBanners);
+router.put("/banners/:id", adminTokenAuth, updateBanner);
+router.patch("/banners/:id/status", adminTokenAuth, updateSliderStatus);
+router.patch("/banners/:id/default", adminTokenAuth, setDefaultBanner);
+router.delete("/banners/:id", adminTokenAuth, deleteSlider);
+
+// Legacy banner routes (for backward compatibility)
+router.post("/add-home-slider", adminTokenAuth, addBanner);
+router.post("/home-sliders", adminTokenAuth, getBanners);
+router.put("/home-slider", adminTokenAuth, updateSliderStatus);
+router.delete("/home-slider/:id", adminTokenAuth, deleteSlider);
 
 // Product routes
 router.get("/products", productController.getProducts);

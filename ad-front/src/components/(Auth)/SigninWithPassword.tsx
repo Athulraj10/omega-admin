@@ -14,7 +14,7 @@ import { UserDetailsType } from "@/types/UserDetailsType";
 export default function SigninWithPassword() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading: authLoading, error: authError } = useAppSelector((state) => state.auth);
+  const { loading: authLoading, error: authError, data: authData } = useAppSelector((state) => state.auth);
   
   const [data, setData] = useState({
     email:"",
@@ -40,15 +40,14 @@ export default function SigninWithPassword() {
 
   // Listen for successful login
   useEffect(() => {
-    const authState = useAppSelector((state) => state.auth);
-    if (authState.data && authState.data.token && !authState.loading) {
+    if (authData && authData.token && !authLoading) {
       setLoading(false);
-      console.log('✅ Login successful:', authState.data);
-      setLocalStorageItem("token", authState.data.token);
-      setLocalStorageItem("adminData", JSON.stringify(authState.data));
+      console.log('✅ Login successful:', authData);
+      setLocalStorageItem("token", authData.token);
+      setLocalStorageItem("adminData", JSON.stringify(authData));
       router.push("/dashboard");
     }
-  }, [authLoading]);
+  }, [authLoading, authData, router]);
 
   // Clear error message when user starts typing
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

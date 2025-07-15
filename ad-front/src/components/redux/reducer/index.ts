@@ -6,6 +6,7 @@ import productReducer from "./products/productReducer";
 import sellerReducer from "./seller";
 import userReducer from "./users/userReducer";
 import categoryReducer from "./categories/categoryReducer";
+import bannerReducer from "./banner/bannerReducer";
 
 const appReducer = combineReducers({
   auth: LoginReducer,
@@ -15,6 +16,7 @@ const appReducer = combineReducers({
   sellers: sellerReducer,
   users: userReducer,
   categories: categoryReducer,
+  banner: bannerReducer,
 });
 
 export type RootState = ReturnType<typeof appReducer>;

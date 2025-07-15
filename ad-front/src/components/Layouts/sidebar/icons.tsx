@@ -284,3 +284,21 @@ export function SellerIcon(props: PropsType) {
     </svg>
   );
 }
+
+export function BannerIcon(props: PropsType) {
+  return (
+    <svg
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.75 4.5a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-15a.75.75 0 01-.75-.75V4.5zM3.75 9.75a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-15a.75.75 0 01-.75-.75V9.75zM3.75 15a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-15a.75.75 0 01-.75-.75V15z"
+      />
+    </svg>
+  );
+}

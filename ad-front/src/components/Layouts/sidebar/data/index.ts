@@ -73,6 +73,22 @@ export const NAV_DATA = [
         ],
       },
       {
+        title: "Banners",
+        icon: Icons.BannerIcon,
+        items: [
+          {
+            title: "Add Banner",
+            url: "/banners/add",
+            icon: Icons.PlusIcon,
+          },
+          {
+            title: "List Banners",
+            url: "/banners/list",
+            icon: Icons.ListIcon,
+          },
+        ],
+      },
+      {
         title: "Settings",
         icon: Icons.Authentication,
         items: [
