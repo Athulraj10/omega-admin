@@ -47,10 +47,10 @@ function* fetchBannersSaga(): Generator<any, void, any> {
     const response: any = yield call(bannerAPI.getBanners);
     console.log('📦 Banner response:', response);
     
-    if (response.data.success) {
+    if (response?.data?.meta?.code === 200) {
       yield put(fetchBannersSuccess(response.data.data));
     } else {
-      yield put(fetchBannersFailure(response.data.message || 'Failed to fetch banners'));
+      yield put(fetchBannersFailure(response.data.meta.message || 'Failed to fetch banners'));
     }
   } catch (error: any) {
     console.error('❌ Banner fetch error:', error);

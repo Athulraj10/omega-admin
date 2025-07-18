@@ -15,9 +15,11 @@ const UserTransaction = require("./userTransaction");
 const UserWallet = require("./userWallet");
 const Wishlist = require("./wishlist");
 const Banner = require("./banner");
+const HeroSlider = require("./heroSlider");
 
 module.exports = {
   User,
   Banner,
+  HeroSlider,
   UserLoginHistory, Address, Cart, Category, Currency, Notification, Order, Otp, Product, Review, UserTransaction, UserWallet, Wishlist
 };

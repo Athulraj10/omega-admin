@@ -1,7 +1,27 @@
-export async function getOverviewData() {
-  // Fake delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+import { store } from "@/components/redux/store";
+import { fetchDashboardOverview } from "@/components/redux/action/dashboard/dashboardAction";
 
+export async function getOverviewData() {
+  // Dispatch the action to fetch dashboard overview
+  store.dispatch(fetchDashboardOverview());
+  
+  // Wait for the data to be loaded (you might want to implement a more sophisticated way)
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+  // Get the current state
+  const state = store.getState();
+  const overview = state.dashboard.overview;
+  
+  if (overview) {
+    return {
+      views: overview.views,
+      profit: overview.profit,
+      products: overview.products,
+      users: overview.users,
+    };
+  }
+  
+  // Fallback to static data if Redux data is not available
   return {
     views: {
       value: 3456,
@@ -23,7 +43,8 @@ export async function getOverviewData() {
 }
 
 export async function getChatsData() {
-  // Fake delay
+  // For now, return static data
+  // In the future, you can implement Redux actions for this
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return [

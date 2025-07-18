@@ -9,6 +9,7 @@ import { RootState } from "@/components/redux/reducer";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import CurrencySelector from "@/components/CurrencySelector";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { formatDate } from "@/utils/dateUtils";
 
 interface User {
   id: string;
@@ -308,7 +309,7 @@ export default function UserList() {
                                 {user.name || 'Unknown User'}
                               </div>
                               <div className="text-sm text-gray-500 dark:text-gray-400">
-                                Joined {user.registrationDate ? new Date(user.registrationDate).toLocaleDateString() : 'Unknown'}
+                                Joined {user.registrationDate ? formatDate(user.registrationDate) : 'Unknown'}
                               </div>
                             </div>
                           </div>
@@ -339,7 +340,7 @@ export default function UserList() {
                           {formatPrice(user.totalSpent || 0)}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                          {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
+                          {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
@@ -460,7 +461,7 @@ export default function UserList() {
                     <div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">Last Login</div>
                       <div className="text-lg font-semibold text-black dark:text-white">
-                        {new Date(selectedUser.lastLogin).toLocaleDateString()}
+                        {formatDate(selectedUser.lastLogin)}
                       </div>
                     </div>
                   </div>
@@ -500,7 +501,7 @@ export default function UserList() {
                             {order.orderNumber}
                           </td>
                           <td className="px-4 py-3 text-black dark:text-white">
-                            {new Date(order.date).toLocaleDateString()}
+                            {formatDate(order.date)}
                           </td>
                           <td className="px-4 py-3">
                             <span

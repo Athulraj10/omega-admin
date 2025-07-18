@@ -1,9 +1,15 @@
+import { store } from "@/components/redux/store";
+import { 
+  fetchPaymentsOverview, 
+  fetchWeeklyProfit, 
+  fetchDeviceUsage, 
+  fetchCampaignVisitors 
+} from "@/components/redux/action/dashboard/dashboardAction";
+
 export async function getDevicesUsedData(
   timeFrame?: "monthly" | "yearly" | (string & {}),
 ) {
-  // Fake delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  // Return static data only - Redux actions should be dispatched from components
   const data = [
     {
       name: "Desktop",
@@ -40,9 +46,7 @@ export async function getDevicesUsedData(
 export async function getPaymentsOverviewData(
   timeFrame?: "monthly" | "yearly" | (string & {}),
 ) {
-  // Fake delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  // Return static data only - Redux actions should be dispatched from components
   if (timeFrame === "yearly") {
     return {
       received: [
@@ -95,9 +99,7 @@ export async function getPaymentsOverviewData(
 }
 
 export async function getWeeksProfitData(timeFrame?: string) {
-  // Fake delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  // Return static data only - Redux actions should be dispatched from components
   if (timeFrame === "last week") {
     return {
       sales: [
@@ -144,9 +146,7 @@ export async function getWeeksProfitData(timeFrame?: string) {
 }
 
 export async function getCampaignVisitorsData() {
-  // Fake delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  // Return static data only - Redux actions should be dispatched from components
   return {
     total_visitors: 784_000,
     performance: -1.5,
@@ -163,7 +163,8 @@ export async function getCampaignVisitorsData() {
 }
 
 export async function getVisitorsAnalyticsData() {
-  // Fake delay
+  // For now, return static data
+  // In the future, you can implement Redux actions for this
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return [
@@ -173,6 +174,8 @@ export async function getVisitorsAnalyticsData() {
 }
 
 export async function getCostsPerInteractionData() {
+  // For now, return static data
+  // In the future, you can implement Redux actions for this
   return {
     avg_cost: 560.93,
     growth: 2.5,

@@ -24,6 +24,7 @@ export default function ListBanners() {
       dispatch(fetchBannersRequest());
     }
   }, [dispatch, mounted]);
+  console.log(banners);
 
   const handleAddBanner = () => {
     router.push('/banners/add');
@@ -65,6 +66,7 @@ export default function ListBanners() {
     
     return `${month} ${day}, ${year} ${hours}:${minutes}`;
   };
+  console.log(filteredBanners);
 
   // Prevent hydration errors by not rendering until mounted
   if (!mounted) {
@@ -177,7 +179,7 @@ export default function ListBanners() {
                             alt="Banner"
                             className="h-full w-full object-cover"
                             onError={(e) => {
-                              e.currentTarget.src = '/images/placeholder.png';
+                              e.currentTarget.src = '/images/product/product-01.png';
                             }}
                           />
                         </div>

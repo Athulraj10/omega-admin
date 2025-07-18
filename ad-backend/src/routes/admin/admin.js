@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const connect = require("connect");
 const { adminTokenAuth } = require("../../middlewares/admin");
 const multer = require("multer");
 const path = require("path");
@@ -8,6 +7,9 @@ const sellerController = require("../../controllers/admin/sellerController");
 const userController = require("../../controllers/admin/userController");
 const categoryController = require("../../controllers/admin/categoryController");
 const currencyController = require("../../controllers/admin/currencyController");
+const dashboardController = require("../../controllers/admin/dashboardController");
+const heroSliderRoutes = require("./heroSlider");
+const bannerRoutes = require('./banner');
 
 const {
   login,
@@ -105,20 +107,6 @@ router.post("/reset-password", adminTokenAuth, resetPassword);
 router.post("/logout", adminTokenAuth, logout);
 router.post("/update-profile", adminTokenAuth, updateProfile);
 
-// Banner routes
-router.post("/banners", adminTokenAuth, upload.single("image"), handleMulterError, addBanner);
-router.get("/banners", adminTokenAuth, getBanners);
-router.put("/banners/:id", adminTokenAuth, updateBanner);
-router.patch("/banners/:id/status", adminTokenAuth, updateSliderStatus);
-router.patch("/banners/:id/default", adminTokenAuth, setDefaultBanner);
-router.delete("/banners/:id", adminTokenAuth, deleteSlider);
-
-// Legacy banner routes (for backward compatibility)
-router.post("/add-home-slider", adminTokenAuth, addBanner);
-router.post("/home-sliders", adminTokenAuth, getBanners);
-router.put("/home-slider", adminTokenAuth, updateSliderStatus);
-router.delete("/home-slider/:id", adminTokenAuth, deleteSlider);
-
 // Product routes
 router.get("/products", productController.getProducts);
 router.post("/products", adminTokenAuth, upload.array("images"), handleMulterError, productController.addProduct);
@@ -158,12 +146,23 @@ router.delete("/users/:id", adminTokenAuth, userController.deleteUser);
 
 // Category routes
 router.get("/categories", adminTokenAuth, categoryController.getCategories);
-router.get("/categories/active", categoryController.getActiveCategories); // No auth for dropdowns
+router.get("/categories/hierarchical", categoryController.getHierarchicalCategories);
+router.get("/categories/active", categoryController.getActiveCategories);
+router.get("/categories/for-product", categoryController.getCategoriesForProduct);
 router.get("/categories/:id", adminTokenAuth, categoryController.getCategoryById);
 router.post("/categories", adminTokenAuth, categoryController.createCategory);
 router.put("/categories/:id", adminTokenAuth, categoryController.updateCategory);
 router.delete("/categories/:id", adminTokenAuth, categoryController.deleteCategory);
 router.patch("/categories/:id/status", adminTokenAuth, categoryController.updateCategoryStatus);
+router.post("/categories/reorder", adminTokenAuth, categoryController.reorderCategories);
+
+// Dashboard routes - temporarily without auth for testing
+router.get("/dashboard/overview", dashboardController.getDashboardOverview);
+router.get("/dashboard/users", dashboardController.getRecentUsers);
+router.get("/dashboard/payments", dashboardController.getPaymentsOverview);
+router.get("/dashboard/weekly-profit", dashboardController.getWeeklyProfit);
+router.get("/dashboard/device-usage", dashboardController.getDeviceUsage);
+router.get("/dashboard/campaign-visitors", dashboardController.getCampaignVisitors);
 
 // Currency routes
 router.get("/currencies", currencyController.getCurrencies);
@@ -172,5 +171,9 @@ router.put("/currencies/:id", adminTokenAuth, currencyController.updateCurrency)
 router.delete("/currencies/:id", adminTokenAuth, currencyController.deleteCurrency);
 router.patch("/currencies/:id/default", adminTokenAuth, currencyController.setDefaultCurrency);
 router.patch("/currencies/:id/status", adminTokenAuth, currencyController.updateCurrencyStatus);
+
+// Hero Slider routes
+router.use("/", heroSliderRoutes);
+router.use('/banners', bannerRoutes);
 
 module.exports = router;

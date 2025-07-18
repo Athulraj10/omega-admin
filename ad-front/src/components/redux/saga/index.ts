@@ -7,7 +7,9 @@ import { sellerSagas } from "./seller";
 import userSaga from "./users/userSaga";
 import { categorySaga } from "./categories/categorySaga";
 import { bannerSaga } from "./banner/bannerSaga";
+import { heroSliderSaga } from "./banner/heroSliderSaga";
+import { dashboardSaga } from "./dashboard/dashboardSaga";
 
 export default function* rootSaga() {
-  yield all([watchLoginAPI(), watchLogoutAPI(), watchProfileAPI(), watchProductAPI(), sellerSagas(), userSaga(), categorySaga(), bannerSaga()]);
+  yield all([watchLoginAPI(), watchLogoutAPI(), watchProfileAPI(), watchProductAPI(), sellerSagas(), userSaga(), categorySaga(), bannerSaga(), heroSliderSaga(), dashboardSaga()]);
 }

@@ -1,19 +1,29 @@
 import { PeriodPicker } from "@/components/period-picker";
 import { standardFormat } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
-import { getPaymentsOverviewData } from "@/services/charts.services";
 import { PaymentsOverviewChart } from "./chart";
 
 type PropsType = {
   timeFrame?: string;
   className?: string;
+  data?: {
+    received: { x: string; y: number }[];
+    due: { x: string; y: number }[];
+  } | null;
+  loading?: boolean;
 };
 
-export async function PaymentsOverview({
+export function PaymentsOverview({
   timeFrame = "monthly",
   className,
+  data,
+  loading = false,
 }: PropsType) {
-  const data = await getPaymentsOverviewData(timeFrame);
+  // Use provided data or fallback to empty data
+  const chartData = data || {
+    received: [],
+    due: []
+  };
 
   return (
     <div
@@ -30,19 +40,25 @@ export async function PaymentsOverview({
         <PeriodPicker defaultValue={timeFrame} sectionKey="payments_overview" />
       </div>
 
-      <PaymentsOverviewChart data={data} />
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        <PaymentsOverviewChart data={chartData} />
+      )}
 
       <dl className="grid divide-stroke text-center dark:divide-dark-3 sm:grid-cols-2 sm:divide-x [&>div]:flex [&>div]:flex-col-reverse [&>div]:gap-1">
         <div className="dark:border-dark-3 max-sm:mb-3 max-sm:border-b max-sm:pb-3">
           <dt className="text-xl font-bold text-dark dark:text-white">
-            ${standardFormat(data.received.reduce((acc, { y }) => acc + y, 0))}
+            ${standardFormat(chartData.received.reduce((acc, { y }) => acc + y, 0))}
           </dt>
           <dd className="font-medium dark:text-dark-6">Received Amount</dd>
         </div>
 
         <div>
           <dt className="text-xl font-bold text-dark dark:text-white">
-            ${standardFormat(data.due.reduce((acc, { y }) => acc + y, 0))}
+            ${standardFormat(chartData.due.reduce((acc, { y }) => acc + y, 0))}
           </dt>
           <dd className="font-medium dark:text-dark-6">Due Amount</dd>
         </div>

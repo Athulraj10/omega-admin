@@ -7,6 +7,8 @@ import sellerReducer from "./seller";
 import userReducer from "./users/userReducer";
 import categoryReducer from "./categories/categoryReducer";
 import bannerReducer from "./banner/bannerReducer";
+import { heroSliderReducer } from "./banner/heroSliderReducer";
+import dashboardReducer from "./dashboard/dashboardReducer";
 
 const appReducer = combineReducers({
   auth: LoginReducer,
@@ -17,6 +19,8 @@ const appReducer = combineReducers({
   users: userReducer,
   categories: categoryReducer,
   banner: bannerReducer,
+  heroSlider: heroSliderReducer,
+  dashboard: dashboardReducer,
 });
 
 export type RootState = ReturnType<typeof appReducer>;

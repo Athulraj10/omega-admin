@@ -1,15 +1,28 @@
 import { PeriodPicker } from "@/components/period-picker";
 import { cn } from "@/lib/utils";
-import { getWeeksProfitData } from "@/services/charts.services";
 import { WeeksProfitChart } from "./chart";
 
 type PropsType = {
   timeFrame?: string;
   className?: string;
+  data?: {
+    sales: { x: string; y: number }[];
+    revenue: { x: string; y: number }[];
+  } | null;
+  loading?: boolean;
 };
 
-export async function WeeksProfit({ className, timeFrame }: PropsType) {
-  const data = await getWeeksProfitData(timeFrame);
+export function WeeksProfit({ 
+  className, 
+  timeFrame,
+  data,
+  loading = false,
+}: PropsType) {
+  // Use provided data or fallback to empty data
+  const chartData = data || {
+    sales: [],
+    revenue: []
+  };
 
   return (
     <div
@@ -30,7 +43,13 @@ export async function WeeksProfit({ className, timeFrame }: PropsType) {
         />
       </div>
 
-      <WeeksProfitChart data={data} />
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        <WeeksProfitChart data={chartData} />
+      )}
     </div>
   );
 }

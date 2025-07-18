@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@/assets/icons";
+import { formatDate } from "@/utils/dateUtils";
 
 interface Order {
   id: string;
@@ -349,7 +350,7 @@ export default function Orders() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-black dark:text-white">
-                    {new Date(order.date).toLocaleDateString()}
+                    {formatDate(order.date)}
                   </td>
                   <td className="px-6 py-4">
                     <select
@@ -446,7 +447,7 @@ export default function Orders() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Order Date</label>
-                  <p className="text-black dark:text-white">{new Date(selectedOrder.date).toLocaleDateString()}</p>
+                  <p className="text-black dark:text-white">{formatDate(selectedOrder.date)}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Amount</label>

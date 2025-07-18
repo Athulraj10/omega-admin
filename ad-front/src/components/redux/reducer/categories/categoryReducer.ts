@@ -26,8 +26,15 @@ interface Category {
   id: string;
   name: string;
   description: string;
+  icon?: string;
+  parentCategory?: any;
+  subcategories?: any[];
+  isMainCategory?: boolean;
+  sortOrder?: number;
   status: 'active' | 'inactive';
   productCount: number;
+  image?: string;
+  slug?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -156,7 +163,7 @@ const categoryReducer = (state = initialState, action: any): CategoryState => {
       return {
         ...state,
         loading: false,
-        categories: [action.payload, ...state.categories],
+        categories: [{ ...action.payload, id: action.payload.id || action.payload._id }, ...state.categories],
         error: null,
       };
 
@@ -176,13 +183,14 @@ const categoryReducer = (state = initialState, action: any): CategoryState => {
       };
 
     case UPDATE_CATEGORY_SUCCESS:
+      console.log('🔄 Reducer: UPDATE_CATEGORY_SUCCESS - payload:', action.payload);
       return {
         ...state,
         loading: false,
         categories: state.categories.map((category) =>
-          category.id === action.payload.id ? action.payload : category
+          category.id === (action.payload.id || action.payload._id) ? action.payload : category
         ),
-        selectedCategory: state.selectedCategory?.id === action.payload.id ? action.payload : state.selectedCategory,
+        selectedCategory: state.selectedCategory?.id === (action.payload.id || action.payload._id) ? action.payload : state.selectedCategory,
         error: null,
       };
 
@@ -226,13 +234,14 @@ const categoryReducer = (state = initialState, action: any): CategoryState => {
       };
 
     case UPDATE_CATEGORY_STATUS_SUCCESS:
+      console.log('🔄 Reducer: UPDATE_CATEGORY_STATUS_SUCCESS - payload:', action.payload);
       return {
         ...state,
         loading: false,
         categories: state.categories.map((category) =>
-          category.id === action.payload.id ? action.payload : category
+          category.id === (action.payload.id || action.payload._id) ? action.payload : category
         ),
-        selectedCategory: state.selectedCategory?.id === action.payload.id ? action.payload : state.selectedCategory,
+        selectedCategory: state.selectedCategory?.id === (action.payload.id || action.payload._id) ? action.payload : state.selectedCategory,
         error: null,
       };
 

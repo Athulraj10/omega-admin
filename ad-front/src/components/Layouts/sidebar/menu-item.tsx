@@ -29,6 +29,11 @@ export function MenuItem(
   const { toggleSidebar, isMobile } = useSidebarContext();
 
   if (props.as === "link") {
+    // Don't render Link if href is undefined
+    if (!props.href) {
+      return null;
+    }
+    
     return (
       <Link
         href={props.href}

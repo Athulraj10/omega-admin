@@ -43,7 +43,9 @@ api.interceptors.response.use(
       // Only log as error if it's not a 400 validation error
       if (error.response?.status !== 400) {
         console.error("API Error:", error);
-        console.error("Error Response:", error.response?.data);
+        if (error.response?.data) {
+          console.error("Error Response:", error.response.data);
+        }
       }
     }
 

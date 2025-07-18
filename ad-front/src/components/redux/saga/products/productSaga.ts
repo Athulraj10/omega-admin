@@ -40,33 +40,45 @@ function* fetchProductsRequest() {
 function* addProductRequest(action: ProductAction) {
   try {
     if (!action.payload) return;
-    const formData = new FormData();
     
-    // Add product data (excluding images)
-    Object.entries(action.payload.data || {}).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, String(value));
-      }
-    });
+    console.log('🔄 Saga: addProductRequest started');
+    console.log('📦 Payload received:', action.payload);
     
-    // Add files separately
-    if (action.payload.files && action.payload.files.length > 0) {
-      action.payload.files.forEach((file: File) => {
-        formData.append("images", file);
-      });
-    }
+    // The component is already sending FormData in action.payload.data
+    const formData = action.payload.data;
     
-    const { data } = yield call(() => API.post("admin/products", formData, { headers: { "Content-Type": "multipart/form-data" } }));
-    if (data?.success) {
-      yield put({ type: types.ADD_PRODUCT_SUCCESS, payload: data.data });
-      if (action.payload?.callback) yield call(action.payload.callback, data.data);
-      notifySuccess(data?.message);
-    } else {
+    if (!formData || !(formData instanceof FormData)) {
+      console.error('❌ FormData not found in payload');
       yield put({ type: types.ADD_PRODUCT_FAILURE });
       if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
-      notifyDanger(data?.message);
+      notifyDanger("Invalid form data");
+      return;
     }
-  } catch (error) {
+    
+    console.log('📤 Sending FormData to API...');
+    const { data } = yield call(() => API.post("admin/products", formData, { 
+      headers: { "Content-Type": "multipart/form-data" } 
+    }));
+    
+    console.log('📥 API Response:', data);
+    
+    if (data?.success) {
+      console.log('✅ Product added successfully');
+      yield put({ type: types.ADD_PRODUCT_SUCCESS, payload: data.data });
+      if (action.payload?.callback) yield call(action.payload.callback, data.data);
+      notifySuccess(data?.message || 'Product added successfully');
+    } else {
+      console.log('❌ API returned error:', data?.message);
+      yield put({ type: types.ADD_PRODUCT_FAILURE });
+      if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
+      notifyDanger(data?.message || 'Failed to add product');
+    }
+  } catch (error: any) {
+    console.error('❌ Error in addProductRequest:', error);
+    if (error.response) {
+      console.error('📄 Error response status:', error.response.status);
+      console.error('📄 Error response data:', error.response.data);
+    }
     yield put({ type: types.ADD_PRODUCT_FAILURE });
     if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
     notifyDanger("Failed to add product");
@@ -76,36 +88,48 @@ function* addProductRequest(action: ProductAction) {
 function* editProductRequest(action: ProductAction) {
   try {
     if (!action.payload) return;
-    const formData = new FormData();
     
-    // Add product data (excluding images)
-    Object.entries(action.payload.data || {}).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, String(value));
-      }
-    });
+    console.log('🔄 Saga: editProductRequest started');
+    console.log('📦 Payload received:', action.payload);
     
-    // Add files separately
-    if (action.payload.files && action.payload.files.length > 0) {
-      action.payload.files.forEach((file: File) => {
-        formData.append("images", file);
-      });
-    }
+    // The component is already sending FormData in action.payload.data
+    const formData = action.payload.data;
     
-    const { data } = yield call(() => API.put(`admin/products/${action.payload?.id}`, formData, { headers: { "Content-Type": "multipart/form-data" } }));
-    if (data?.success) {
-      yield put({ type: types.EDIT_PRODUCT_SUCCESS, payload: data.data });
-      if (action.payload?.callback) yield call(action.payload.callback, data.data);
-      notifySuccess(data?.message);
-    } else {
+    if (!formData || !(formData instanceof FormData)) {
+      console.error('❌ FormData not found in payload');
       yield put({ type: types.EDIT_PRODUCT_FAILURE });
       if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
-      notifyDanger(data?.message);
+      notifyDanger("Invalid form data");
+      return;
     }
-  } catch (error) {
+    
+    console.log('📤 Sending FormData to API...');
+    const { data } = yield call(() => API.put(`admin/products/${action.payload?.id}`, formData, { 
+      headers: { "Content-Type": "multipart/form-data" } 
+    }));
+    
+    console.log('📥 API Response:', data);
+    
+    if (data?.success) {
+      console.log('✅ Product updated successfully');
+      yield put({ type: types.EDIT_PRODUCT_SUCCESS, payload: data.data });
+      if (action.payload?.callback) yield call(action.payload.callback, data.data);
+      notifySuccess(data?.message || 'Product updated successfully');
+    } else {
+      console.log('❌ API returned error:', data?.message);
+      yield put({ type: types.EDIT_PRODUCT_FAILURE });
+      if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
+      notifyDanger(data?.message || 'Failed to update product');
+    }
+  } catch (error: any) {
+    console.error('❌ Error in editProductRequest:', error);
+    if (error.response) {
+      console.error('📄 Error response status:', error.response.status);
+      console.error('📄 Error response data:', error.response.data);
+    }
     yield put({ type: types.EDIT_PRODUCT_FAILURE });
     if (action.payload?.errorCallback) yield call(action.payload.errorCallback);
-    notifyDanger("Failed to edit product");
+    notifyDanger("Failed to update product");
   }
 }
 

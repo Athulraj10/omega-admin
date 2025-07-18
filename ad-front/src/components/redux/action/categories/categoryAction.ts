@@ -31,7 +31,10 @@ export const UPDATE_CATEGORY_STATUS_FAILURE = 'categories/updateCategoryStatusFa
 
 // Action Creators
 export const fetchCategoriesRequest = createAction(FETCH_CATEGORIES_REQUEST);
-export const fetchCategoriesSuccess = createAction(FETCH_CATEGORIES_SUCCESS);
+export const fetchCategoriesSuccess = createAction<{
+  categories: any[];
+  pagination: any;
+}>(FETCH_CATEGORIES_SUCCESS);
 export const fetchCategoriesFailure = createAction(FETCH_CATEGORIES_FAILURE);
 
 export const fetchActiveCategoriesRequest = createAction(FETCH_ACTIVE_CATEGORIES_REQUEST);
@@ -43,20 +46,20 @@ export const fetchCategoryDetailsSuccess = createAction(FETCH_CATEGORY_DETAILS_S
 export const fetchCategoryDetailsFailure = createAction(FETCH_CATEGORY_DETAILS_FAILURE);
 
 export const createCategoryRequest = createAction(CREATE_CATEGORY_REQUEST);
-export const createCategorySuccess = createAction(CREATE_CATEGORY_SUCCESS);
-export const createCategoryFailure = createAction(CREATE_CATEGORY_FAILURE);
+export const createCategorySuccess = createAction<any>(CREATE_CATEGORY_SUCCESS);
+export const createCategoryFailure = createAction<string>(CREATE_CATEGORY_FAILURE);
 
 export const updateCategoryRequest = createAction(UPDATE_CATEGORY_REQUEST);
-export const updateCategorySuccess = createAction(UPDATE_CATEGORY_SUCCESS);
-export const updateCategoryFailure = createAction(UPDATE_CATEGORY_FAILURE);
+export const updateCategorySuccess = createAction<any>(UPDATE_CATEGORY_SUCCESS);
+export const updateCategoryFailure = createAction<string>(UPDATE_CATEGORY_FAILURE);
 
 export const deleteCategoryRequest = createAction(DELETE_CATEGORY_REQUEST);
-export const deleteCategorySuccess = createAction(DELETE_CATEGORY_SUCCESS);
-export const deleteCategoryFailure = createAction(DELETE_CATEGORY_FAILURE);
+export const deleteCategorySuccess = createAction<string>(DELETE_CATEGORY_SUCCESS);
+export const deleteCategoryFailure = createAction<string>(DELETE_CATEGORY_FAILURE);
 
 export const updateCategoryStatusRequest = createAction(UPDATE_CATEGORY_STATUS_REQUEST);
-export const updateCategoryStatusSuccess = createAction(UPDATE_CATEGORY_STATUS_SUCCESS);
-export const updateCategoryStatusFailure = createAction(UPDATE_CATEGORY_STATUS_FAILURE);
+export const updateCategoryStatusSuccess = createAction<any>(UPDATE_CATEGORY_STATUS_SUCCESS);
+export const updateCategoryStatusFailure = createAction<string>(UPDATE_CATEGORY_STATUS_FAILURE);
 
 // Action Creators for Saga
 export const fetchCategories = (params: {

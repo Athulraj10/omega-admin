@@ -9,6 +9,7 @@ import { getSellersRequest } from "@/components/redux/action/seller";
 import { fetchActiveCategories } from "@/components/redux/action/categories/categoryAction";
 import { useRouter, useSearchParams } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import CategorySubcategorySelector from "@/components/CategorySubcategorySelector";
 
 export default function AddProduct() {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export default function AddProduct() {
     description: "",
     price: "",
     category: "",
+    subcategory: "",
     stock: "",
     status: "1",
     sku: "",
@@ -39,6 +41,11 @@ export default function AddProduct() {
     dispatch(fetchActiveCategories());
   }, [dispatch]);
 
+  // Debug form data changes
+  useEffect(() => {
+    console.log('📝 Form data updated:', formData);
+  }, [formData]);
+
   useEffect(() => {
     const id = searchParams.get("id");
     if (id) {
@@ -53,6 +60,7 @@ export default function AddProduct() {
             description: prod.description || "",
             price: prod.price?.toString() || "",
             category: prod.category || "",
+            subcategory: prod.subcategory || "",
             stock: prod.stock?.toString() || "",
             status: prod.status || "1",
             sku: prod.sku || "",
@@ -72,7 +80,22 @@ export default function AddProduct() {
     });
   };
 
+  const handleCategoryChange = (categoryId: string) => {
+    console.log('🔄 Parent: Category changed to:', categoryId);
+    setFormData(prev => ({
+      ...prev,
+      category: categoryId,
+      subcategory: "", // Reset subcategory when category changes
+    }));
+  };
 
+  const handleSubcategoryChange = (subcategoryId: string) => {
+    console.log('🔄 Parent: Subcategory changed to:', subcategoryId);
+    setFormData(prev => ({
+      ...prev,
+      subcategory: subcategoryId,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -130,82 +153,38 @@ export default function AddProduct() {
         });
       }
       
-      // Convert price and stock to numbers
-      formDataToSend.set('price', parseFloat(formData.price).toString());
-      formDataToSend.set('stock', parseInt(formData.stock).toString());
-      
-      if (formData.discountPrice) {
-        formDataToSend.set('discountPrice', parseFloat(formData.discountPrice).toString());
-      }
-      
-      // Make direct API call
-      const API = (await import('@/utils/api')).default;
-      const url = editId ? `/admin/products/${editId}` : '/admin/products';
-      const method = editId ? 'put' : 'post';
-      
-      const response = await API[method](url, formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
-      console.log('📡 API Response:', response.data);
-      console.log('📡 Response structure:', {
-        hasMeta: !!response.data?.meta,
-        metaCode: response.data?.meta?.code,
-        hasSuccess: !!response.data?.success,
-        hasMessage: !!response.data?.message,
-        hasMetaMessage: !!response.data?.meta?.message
-      });
-      
-      if (response.data?.meta?.code === 200 || response.data?.success) {
-        clearTimeoutAndStopLoading();
-        router.push("/products/list");
+      // Submit the form
+      if (editId) {
+        // Update existing product
+        await dispatch(editProduct({ 
+          id: editId, 
+          data: formDataToSend,
+          callback: () => {
+            alert('Product updated successfully!');
+            router.push('/products/list');
+          },
+          errorCallback: () => {
+            handleError('Failed to update product');
+          }
+        }));
       } else {
-        const errorMessage = response.data?.meta?.message || response.data?.message || "Failed to save product";
-        handleError(errorMessage);
+        // Add new product
+        await dispatch(addProduct({ 
+          data: formDataToSend,
+          callback: () => {
+            alert('Product added successfully!');
+            router.push('/products/list');
+          },
+          errorCallback: () => {
+            handleError('Failed to add product');
+          }
+        }));
       }
+      
+      clearTimeoutAndStopLoading();
     } catch (error: any) {
-      console.error('Error saving product:', error);
-      console.error('Error type:', error.constructor.name);
-      console.error('Error message:', error.message);
-      console.error('Error response status:', error.response?.status);
-      console.error('Error response data:', error.response?.data);
-      console.error('Error response headers:', error.response?.headers);
-      
-      let errorMessage = "Failed to save product. Please try again.";
-      
-      // Handle different types of errors
-      if (error.response?.data) {
-        // Handle different error response structures
-        if (error.response.data.meta?.message) {
-          errorMessage = error.response.data.meta.message;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data;
-        }
-      } else if (error.message) {
-        // Handle network or other errors
-        if (error.message.includes('Network Error')) {
-          errorMessage = "Network error. Please check your connection and try again.";
-        } else if (error.message.includes('timeout')) {
-          errorMessage = "Request timed out. Please try again.";
-        } else if (error.message.includes('400')) {
-          errorMessage = "Bad request. Please check your input and try again.";
-        } else if (error.message.includes('401')) {
-          errorMessage = "Authentication failed. Please log in again.";
-        } else if (error.message.includes('403')) {
-          errorMessage = "Access denied. You don't have permission to perform this action.";
-        } else if (error.message.includes('404')) {
-          errorMessage = "Resource not found. Please check the URL and try again.";
-        } else if (error.message.includes('500')) {
-          errorMessage = "Server error. Please try again later.";
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
+      console.error('❌ Error in handleSubmit:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
       handleError(errorMessage);
     }
   };
@@ -285,25 +264,14 @@ export default function AddProduct() {
             />
           </div>
 
-          <div>
-            <label className="mb-2.5 block text-black dark:text-white">
-              Category <span className="text-meta-1">*</span>
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
-            >
-              <option value="">Select a category</option>
-              {activeCategories.map((category: any) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Category and Subcategory Selection */}
+          <CategorySubcategorySelector
+            selectedCategory={formData.category}
+            selectedSubcategory={formData.subcategory}
+            onCategoryChange={handleCategoryChange}
+            onSubcategoryChange={handleSubcategoryChange}
+            required
+          />
 
           <div>
             <label className="mb-2.5 block text-black dark:text-white">
@@ -376,6 +344,7 @@ export default function AddProduct() {
                 description: "",
                 price: "",
                 category: "",
+                subcategory: "",
                 stock: "",
                 status: "1",
                 sku: "",

@@ -1,18 +1,26 @@
 import { PeriodPicker } from "@/components/period-picker";
 import { cn } from "@/lib/utils";
-import { getDevicesUsedData } from "@/services/charts.services";
 import { DonutChart } from "./chart";
 
 type PropsType = {
   timeFrame?: string;
   className?: string;
+  data?: {
+    name: string;
+    percentage: number;
+    amount: number;
+  }[] | null;
+  loading?: boolean;
 };
 
-export async function UsedDevices({
+export function UsedDevices({
   timeFrame = "monthly",
   className,
+  data,
+  loading = false,
 }: PropsType) {
-  const data = await getDevicesUsedData(timeFrame);
+  // Use provided data or fallback to empty data
+  const chartData = data || [];
 
   return (
     <div
@@ -30,7 +38,13 @@ export async function UsedDevices({
       </div>
 
       <div className="grid place-items-center">
-        <DonutChart data={data} />
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <DonutChart data={chartData} />
+        )}
       </div>
     </div>
   );

@@ -28,10 +28,41 @@ export const NAV_DATA = [
             url: "/products/list",
             icon: Icons.ListIcon,
           },
+        ],
+      },
+      {
+        title: "Categories",
+        icon: Icons.TagIcon,
+        items: [
           {
-            title: "Categories",
-            url: "/products/categories",
+            title: "All Categories",
+            url: "/products/categories/manage",
+            icon: Icons.ListIcon,
+          },
+          {
+            title: "Category Tree",
+            url: "/products/categories/tree",
             icon: Icons.TagIcon,
+          },
+          {
+            title: "Main Categories",
+            url: "/products/categories/main",
+            icon: Icons.TagIcon,
+          },
+          {
+            title: "Subcategories",
+            url: "/products/categories/sub",
+            icon: Icons.TagIcon,
+          },
+          {
+            title: "Add Category",
+            url: "/products/categories/add",
+            icon: Icons.PlusIcon,
+          },
+          {
+            title: "Category Demo",
+            url: "/products/categories/demo",
+            icon: Icons.FourCircle,
           },
         ],
       },
@@ -84,6 +115,22 @@ export const NAV_DATA = [
           {
             title: "List Banners",
             url: "/banners/list",
+            icon: Icons.ListIcon,
+          },
+        ],
+      },
+      {
+        title: "Hero Sliders",
+        icon: Icons.SliderIcon,
+        items: [
+          {
+            title: "Add Hero Slider",
+            url: "/banners/hero-sliders/add",
+            icon: Icons.PlusIcon,
+          },
+          {
+            title: "List Hero Sliders",
+            url: "/banners/hero-sliders",
             icon: Icons.ListIcon,
           },
         ],

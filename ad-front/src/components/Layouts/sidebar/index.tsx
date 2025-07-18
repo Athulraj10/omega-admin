@@ -121,13 +121,19 @@ export function Sidebar() {
                               >
                                 {item.items.map((subItem) => (
                                   <li key={subItem.title} role="none">
-                                    <MenuItem
-                                      as="link"
-                                      href={subItem.url}
-                                      isActive={pathname === subItem.url}
-                                    >
-                                      <span>{subItem.title}</span>
-                                    </MenuItem>
+                                    {'url' in subItem && subItem.url ? (
+                                      <MenuItem
+                                        as="link"
+                                        href={subItem.url}
+                                        isActive={pathname === subItem.url}
+                                      >
+                                        <span>{subItem.title}</span>
+                                      </MenuItem>
+                                    ) : (
+                                      <div className="px-3 py-2 text-sm text-gray-500">
+                                        {subItem.title}
+                                      </div>
+                                    )}
                                   </li>
                                 ))}
                               </ul>
@@ -136,10 +142,15 @@ export function Sidebar() {
                         ) : (
                           (() => {
                             const href =
-                              "url" in item
-                                ? item.url + ""
+                              "url" in item && item.url
+                                ? item.url
                                 : "/" +
                                   item.title.toLowerCase().split(" ").join("-");
+
+                            // Ensure href is never undefined
+                            if (!href) {
+                              return null; // Don't render the item if no valid href
+                            }
 
                             return (
                               <MenuItem
